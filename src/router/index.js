@@ -17,9 +17,9 @@ const routes = [
     }
   },
   {
-    path: '/send',
+    path: '/new',
     components: {
-      reset: resolve => require(['views/send'], resolve)
+      reset: resolve => require(['views/new'], resolve)
     }
   },
   {

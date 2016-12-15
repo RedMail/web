@@ -11,7 +11,7 @@
           mu-avatar(slot="leftAvatar") {{mail.from.substr(0, 1).toUpperCase()}}
           span(slot="describe") {{mail.text}}
         mu-divider(inset)
-    router-link(to="/send")
+    router-link(to="/new")
       mu-float-button.turn-to-send(icon="create", secondary)
     mu-dialog(:open="showLogin", title="登录", @close="closeLogin")
       mu-text-field(v-model="id", label="账号", :labelFloat="true", hintText="输入账号", icon="person", :fullWidth="true")

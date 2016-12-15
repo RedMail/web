@@ -11,6 +11,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import marked from 'marked'
 
 export default {
   data () {
@@ -28,10 +29,16 @@ export default {
     ]),
     sendMail () {
       this.$http
-        .post('http://redmail.site/send', {
+        .post('/send', {
           to: this.mailForm.to,
+          from: 'nobey@nobey.cn',
           subject: this.mailForm.subject,
-          html: this.mailForm.html
+          html: marked(this.mailForm.html),
+          text: this.mailForm.html
+        }, {
+          headers: {
+            'Content-Type': 'x-www-from-urlencoded'
+          }
         })
         .then((data) => {
           this.toogleSnackbar('发送成功')

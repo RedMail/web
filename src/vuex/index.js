@@ -41,7 +41,7 @@ const mutations = {
 const actions = {
   getMails ({ commit }) {
     Vue.http
-      .get('http://redmail.site/list/1')
+      .get('/list/1')
       .then((data) => {
         commit('MAILS', data.body)
       }, (err) => {

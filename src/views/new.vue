@@ -35,10 +35,6 @@ export default {
           subject: this.mailForm.subject,
           html: marked(this.mailForm.html),
           text: this.mailForm.html
-        }, {
-          headers: {
-            'Content-Type': 'x-www-from-urlencoded'
-          }
         })
         .then((data) => {
           this.toogleSnackbar('发送成功')

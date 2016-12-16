@@ -4,7 +4,7 @@
     mu-icon-button(icon='menu', slot="left")
     mu-icon-menu(icon="more_vert", slot="right")
       mu-menu-item(title="登录", @click="openLogin")
-  mu-content-block.content
+  mu-content-block.content(ref="scroller")
     mu-list
       router-link(v-for="(mail, index) in mails.list", :to="'/detail/' + (index + 1)")
         mu-list-item(:title="mail.subject")
@@ -13,6 +13,7 @@
         mu-divider(inset)
     router-link(to="/new")
       mu-float-button.turn-to-send(icon="create", secondary)
+    mu-infinite-scroll(:scroller="scroller", :loading="loading", @load="loadMore()", loadingText="正在加载...")
     mu-dialog(:open="showLogin", title="登录", @close="closeLogin")
       mu-text-field(v-model="id", label="账号", :labelFloat="true", hintText="输入账号", icon="person", :fullWidth="true")
       mu-text-field(v-model="pwd", label="密码", :labelFloat="true", hintText="输入密码", icon="fingerprint", :fullWidth="true", type="password")
@@ -24,14 +25,33 @@
 import { mapState, mapActions } from 'vuex'
 
 export default {
+  name: 'index',
   mounted () {
+    this.scroller = this.$refs.scroller.$el
+  },
+  activated () {
+    this.$refs.scroller.$el.scrollLeft = this.position.x
+    this.$refs.scroller.$el.scrollTop = this.position.y
   },
   data () {
     return {
       id: '',
       pwd: '',
-      showLogin: true
+      showLogin: true,
+      page: 1,
+      scroller: null,
+      loading: false,
+      position: {
+        x: 0,
+        y: 0
+      }
     }
+  },
+  computed: {
+    ...mapState([
+      'user',
+      'mails'
+    ])
   },
   methods: {
     ...mapActions([
@@ -45,16 +65,29 @@ export default {
       this.showLogin = false
     },
     login () {
-      this.getMails()
+      this.getMails(this.page)
       this.showLogin = false
       this.$store.commit('USER')
+    },
+    async loadMore () {
+      this.loading = true
+      if (this.mails.count <= this.page * 10) {
+        this.loading = false
+        this.toogleSnackbar('没有更多邮件')
+        return
+      }
+      this.page++
+      var result = await this.getMails(this.page)
+      this.loading = false
+      if (result.state !== 1) return this.page--
     }
   },
-  computed: {
-    ...mapState([
-      'user',
-      'mails'
-    ])
+  beforeRouteLeave (to, from, next) {
+    this.position = {
+      x: this.$refs.scroller.$el.scrollLeft,
+      y: this.$refs.scroller.$el.scrollTop
+    }
+    next()
   }
 }
 </script>

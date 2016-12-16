@@ -8,7 +8,7 @@ const state = {
   user: {},
   mails: {
     count: Number,
-    list: {}
+    list: []
   },
   snackbar: {
     show: false,
@@ -22,7 +22,8 @@ const mutations = {
     state.user = user
   },
   MAILS (state, mails) {
-    state.mails = mails
+    state.mails.count = mails.count
+    state.mails.list = state.mails.list.concat(mails.list)
   },
   SNACKBAR (state, message) {
     if (state.snackbar.timer) clearTimeout(state.snackbar.timer)
@@ -39,14 +40,15 @@ const mutations = {
 }
 
 const actions = {
-  getMails ({ commit }) {
-    Vue.http
-      .get('/list/1')
+  getMails ({ commit }, page) {
+    return Vue.http
+      .get('/list/' + page)
       .then((data) => {
         commit('MAILS', data.body)
+        return { state: 1 }
       }, (err) => {
-        this.toogleSnackbar('登录失败，请稍后再试')
-        console.log(err)
+        commit('SNACKBAR', '获取邮件失败，请稍后再试')
+        return { state: 0, err: err }
       })
   },
   toogleSnackbar ({ commit }, message) {

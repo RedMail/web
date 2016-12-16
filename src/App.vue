@@ -39,6 +39,12 @@ export default {
   top 0
 
 .content
+  position absolute
+  top 0
+  bottom 0
+  left 0
+  right 0
+  overflow auto
   padding-top 56px
   @media (min-width: 480px)
     padding-top 64px
